@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { API, graphqlOperation } from 'aws-amplify';
 import {
 	AmplifyProvider,
@@ -17,7 +17,7 @@ import {
 import '@aws-amplify/ui-react/styles.css';
 import Amplify from '@aws-amplify/core';
 
-import { Blog, Comment, CreateBlogInput, CreateCommentInput, CreatePostInput, Post } from './API';
+import { CreateBlogInput, CreateCommentInput, CreatePostInput } from './API';
 import awsExports from './aws-exports';
 import { AuthProvider } from './contexts/AuthContext';
 import useAuth from './hooks/useAuth';
@@ -26,15 +26,18 @@ import { createPost } from './lib/post';
 import { createComment } from './lib/comment';
 import { theme } from './theme';
 import * as subscriptions from './graphql/subscriptions';
+import { useBlogs } from './hooks/useBlog';
+import { usePosts } from './hooks/usePost';
+import { useComments } from './hooks/useComment';
 
 Amplify.configure(awsExports);
 
 const Main = () => {
 	const { user } = useAuth();
 	const { tokens } = useTheme();
-	const [blogs, setBlogs] = useState<Blog[] | null>(null);
-	const [posts, setPosts] = useState<Post[] | null>(null);
-	const [comments, setComments] = useState<Comment[] | null>(null);
+	const { blogs } = useBlogs();
+	const { posts } = usePosts();
+	const { comments } = useComments();
 
 	const handleCreateBlog = async () => {
 		const input: CreateBlogInput = {
@@ -148,8 +151,6 @@ const Main = () => {
 };
 
 export default function App() {
-	const { user } = useAuth();
-
 	return (
 		<AmplifyProvider theme={theme}>
 			<AuthProvider>
