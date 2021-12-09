@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { API, graphqlOperation } from 'aws-amplify';
 import {
 	AmplifyProvider,
 	Button,
@@ -15,26 +17,24 @@ import {
 import '@aws-amplify/ui-react/styles.css';
 import Amplify from '@aws-amplify/core';
 
-import { CreateBlogInput, CreateCommentInput, CreatePostInput } from './API';
+import { Blog, Comment, CreateBlogInput, CreateCommentInput, CreatePostInput, Post } from './API';
 import awsExports from './aws-exports';
 import { AuthProvider } from './contexts/AuthContext';
 import useAuth from './hooks/useAuth';
-import { useBlogsSubscription } from './hooks/useBlog';
-import { usePostsSubscription } from './hooks/usePost';
-import { useCommentsSubscription } from './hooks/useComment';
 import { createBlog } from './lib/blog';
 import { createPost } from './lib/post';
 import { createComment } from './lib/comment';
 import { theme } from './theme';
+import * as subscriptions from './graphql/subscriptions';
 
 Amplify.configure(awsExports);
 
 const Main = () => {
 	const { user } = useAuth();
 	const { tokens } = useTheme();
-	const { blogs } = useBlogsSubscription();
-	const { posts } = usePostsSubscription();
-	const { comments } = useCommentsSubscription();
+	const [blogs, setBlogs] = useState<Blog[] | null>(null);
+	const [posts, setPosts] = useState<Post[] | null>(null);
+	const [comments, setComments] = useState<Comment[] | null>(null);
 
 	const handleCreateBlog = async () => {
 		const input: CreateBlogInput = {
@@ -47,19 +47,34 @@ const Main = () => {
 	const handleCreatePost = async () => {
 		const input: CreatePostInput = {
 			title: 'Post',
-			blogPostsId: blogs.length > 0 ? blogs[0].id : undefined
+			blogPostsId: blogs && blogs.length > 0 ? blogs[0].id : undefined
 		};
 		const createdPost = await createPost(input);
 		console.log('createdPost', createdPost);
 	};
+
 	const handleCreateComment = async () => {
 		const input: CreateCommentInput = {
 			content: 'Comment',
-			postCommentsId: posts.length > 0 ? posts[0].id : undefined
+			postCommentsId: posts && posts.length > 0 ? posts[0].id : undefined
 		};
 		const createdComment = await createComment(input);
 		console.log('createdComment', createdComment);
 	};
+
+	useEffect(() => {
+		// @ts-ignore
+		window.LOG_LEVEL = 'DEBUG';
+		const subscription = API.graphql(graphqlOperation(subscriptions.onCreateBlog))
+			// @ts-ignore
+			.subscribe({
+				next: ({ provider, value }: any) => console.log({ provider, value }),
+				error: (error: any) => console.warn(error)
+			});
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, []);
 
 	return user ? (
 		<Card>
@@ -74,7 +89,8 @@ const Main = () => {
 					<Text>Blogs</Text>
 					<Table size='large' variation='bordered'>
 						<TableBody>
-							{blogs.length > 0 &&
+							{blogs &&
+								blogs.length > 0 &&
 								blogs.map((blog) => (
 									<TableRow key={blog.id}>
 										<TableCell>{blog.id}</TableCell>
@@ -94,7 +110,8 @@ const Main = () => {
 					<Text>Posts</Text>
 					<Table size='large' variation='bordered'>
 						<TableBody>
-							{posts.length > 0 &&
+							{posts &&
+								posts.length > 0 &&
 								posts.map((post) => (
 									<TableRow key={post.id}>
 										<TableCell>{post.id}</TableCell>
@@ -114,7 +131,8 @@ const Main = () => {
 					<Text>Comments</Text>
 					<Table size='large' variation='bordered'>
 						<TableBody>
-							{comments.length > 0 &&
+							{comments &&
+								comments.length > 0 &&
 								comments.map((comment) => (
 									<TableRow key={comment.id}>
 										<TableCell>{comment.id}</TableCell>

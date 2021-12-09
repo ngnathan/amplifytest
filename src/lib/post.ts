@@ -1,5 +1,4 @@
 import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
-import { Storage } from 'aws-amplify';
 
 import {
 	Post,
@@ -11,7 +10,6 @@ import {
 	UpdatePostInput,
 	UpdatePostMutation
 } from 'src/API';
-import { getAuthenticatedUser } from 'src/contexts/AuthContext';
 import * as mutations from 'src/graphql/mutations';
 import * as queries from 'src/graphql/queries';
 import { setGraphQLError } from 'src/utils/amplify';

@@ -10,7 +10,6 @@ import {
 	UpdateCommentInput,
 	UpdateCommentMutation
 } from 'src/API';
-import { getAuthenticatedUser } from 'src/contexts/AuthContext';
 import * as mutations from 'src/graphql/mutations';
 import * as queries from 'src/graphql/queries';
 import { setGraphQLError } from 'src/utils/amplify';

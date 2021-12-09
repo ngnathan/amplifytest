@@ -48,11 +48,12 @@ export const setGraphQLError = (name: string, error: GraphQLResult | unknown): E
 	let displayError: Error | null = null;
 	if (gqlResult.errors && gqlResult.errors.length > 0) {
 		gqlResult.errors.map((gqlError: any) => {
-			if (!gqlError) return;
+			if (!gqlError) return null;
 			logger.error(name, gqlError.message);
 			if (gqlError.display) {
 				displayError = gqlError;
 			}
+			return null;
 		});
 	} else {
 		logger.error(name, gqlResult);

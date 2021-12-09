@@ -23,8 +23,6 @@ const useGQLSubscription = <ItemType extends { id?: string }, VariablesType exte
 
 	useEffect(() => {
 		if (config && !isEqual(config, currentConfig)) {
-			console.log('setting config', config);
-			console.log('currentConfig', currentConfig);
 			setCurrentConfig(config);
 		}
 	}, [config, currentConfig]);
@@ -33,9 +31,6 @@ const useGQLSubscription = <ItemType extends { id?: string }, VariablesType exte
 		if (!currentConfig || !isAuthenticated) return;
 		const { query, key, variables } = currentConfig;
 		if (!query || !key) return;
-
-		console.log('getting subscription', key);
-
 		const subscription = API.graphql({
 			query,
 			variables,
@@ -57,7 +52,8 @@ const useGQLSubscription = <ItemType extends { id?: string }, VariablesType exte
 						console.error(`${error.message} - Check the key property: the current value is ${key}`);
 					}
 				}
-			}
+			},
+			error: (error: any) => console.warn(error)
 		});
 
 		return () => {
