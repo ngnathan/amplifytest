@@ -150,23 +150,6 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 				}
 			});
 		}
-		if (user) {
-			try {
-				// TODO: Update when Admin issue is resolved
-				if (!user.isAdmin) {
-					console.log('user', user);
-					// await Analytics.updateEndpoint({
-					// 	address: user.email.toLocaleLowerCase(),
-					// 	channelType: 'EMAIL',
-					// 	optOut: 'NONE',
-					// 	userId: user.sub,
-					// 	demographic: {
-					// 		locale: getLang()
-					// 	}
-					// });
-				}
-			} catch (error) {}
-		}
 	};
 
 	const logout = async () => {

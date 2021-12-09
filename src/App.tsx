@@ -63,8 +63,6 @@ const Main = () => {
 	};
 
 	useEffect(() => {
-		// @ts-ignore
-		window.LOG_LEVEL = 'DEBUG';
 		const subscription = API.graphql(graphqlOperation(subscriptions.onCreateBlog))
 			// @ts-ignore
 			.subscribe({
@@ -152,7 +150,6 @@ const Main = () => {
 export default function App() {
 	const { user } = useAuth();
 
-	console.log('user', user);
 	return (
 		<AmplifyProvider theme={theme}>
 			<AuthProvider>
